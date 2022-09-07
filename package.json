@@ -1,0 +1,76 @@
+{
+  "name": "@tool_blox/contracts",
+  "version": "1.2.17",
+  "description": "Toolblox Base Contracts",
+  "main": "index.js",
+  "files": [
+    "contracts"
+  ],
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "deploy:testnet": "npx hardhat run scripts/deploy-testnet.ts",
+    "deploy:mainnet": "npx hardhat run scripts/deploy-mainnet.ts",
+    "deploy:all": "npx hardhat run scripts/deploy-all.ts",
+    "deploy": "npx hardhat run scripts/deploy.ts",
+    "deploy:base-sepolia": "npx hardhat run scripts/deploy-to-network.ts --network baseSepolia",
+    "deploy:base-mainnet": "npx hardhat run scripts/deploy-to-network.ts --network baseMainnet",
+    "deploy:sepolia": "npx hardhat run scripts/deploy-to-network.ts --network sepolia",
+    "deploy:polygon-mumbai": "npx hardhat run scripts/deploy-to-network.ts --network polygonMumbai",
+    "deploy:polygon-amoy": "npx hardhat run scripts/deploy-to-network.ts --network polygonAmoy",
+    "deploy:arbitrum-sepolia": "npx hardhat run scripts/deploy-to-network.ts --network arbitrumSepolia",
+    "deploy:optimism-sepolia": "npx hardhat run scripts/deploy-to-network.ts --network optimismSepolia",
+    "deploy:bsc-testnet": "npx hardhat run scripts/deploy-to-network.ts --network bscTestnet",
+    "deploy:fuji": "npx hardhat run scripts/deploy-to-network.ts --network fuji",
+    "deploy:scroll-sepolia": "npx hardhat run scripts/deploy-to-network.ts --network scrollSepolia",
+    "deploy:unichain-sepolia": "npx hardhat run scripts/deploy-to-network.ts --network unichainSepolia",
+    
+    "deploy:ethereum-mainnet": "npx hardhat run scripts/deploy-to-network.ts --network mainnet",
+    "deploy:arbitrum-mainnet": "npx hardhat run scripts/deploy-to-network.ts --network arbitrum",
+    "deploy:bsc-mainnet": "npx hardhat run scripts/deploy-to-network.ts --network bsc",
+    "deploy:avalanche-mainnet": "npx hardhat run scripts/deploy-to-network.ts --network avalanche",
+    "deploy:scroll-mainnet": "npx hardhat run scripts/deploy-to-network.ts --network scroll",
+    "deploy:unichain-mainnet": "npx hardhat run scripts/deploy-to-network.ts --network unichain",
+    "deploy:celo-mainnet": "npx hardhat run scripts/deploy-to-network.ts --network celo",
+    "deploy:celo-testnet": "npx hardhat run scripts/deploy-to-network.ts --network celoAlfajores",
+    "deploy:zora-mainnet": "npx hardhat run scripts/deploy-to-network.ts --network zora",
+    "deploy:zora-testnet": "npx hardhat run scripts/deploy-to-network.ts --network zoraSepolia",
+    "deploy:worldchain-mainnet": "npx hardhat run scripts/deploy-to-network.ts --network worldchain",
+    "deploy:polygon-mainnet": "npx hardhat run scripts/deploy-to-network.ts --network polygon",
+    "deploy:optimism-mainnet": "npx hardhat run scripts/deploy-to-network.ts --network optimism",
+    "deploy:hedera-mainnet": "npx hardhat run scripts/deploy-to-network.ts --network hederaMainnet",
+    "transfer:ownership": "npx hardhat run scripts/transfer-ownerships.ts",
+    "transfer:ownership:tix": "set TRANSFER_SCOPE=tix && npm run transfer:ownership",
+    "transfer:ownership:adapters": "set TRANSFER_SCOPE=adapters && npm run transfer:ownership",
+    "gen:eids:cs": "npx ts-node scripts/generate-eids-cs.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Ideevoog/Toolblox.Token.git"
+  },
+  "author": "Toolblox",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Ideevoog/Toolblox.Token/issues"
+  },
+  "homepage": "https://github.com/Ideevoog/Toolblox.Token#readme",
+  "dependencies": {
+    "@layerzerolabs/oapp-evm": "^0.3.2",
+    "@openzeppelin/contracts": "5.0.2",
+    "@openzeppelin/contracts-upgradeable": "5.0.2",
+    "csv-parser": "^3.0.0",
+    "csv-writer": "^1.6.0",
+    "ethers": "5.8.0",
+    "node-fetch": "^2.7.0",
+    "web3": "^4.1.1"
+  },
+  "devDependencies": {
+    "@nomiclabs/hardhat-ethers": "^2.2.3",
+    "@nomiclabs/hardhat-waffle": "^2.0.6",
+    "chai": "^6.0.1",
+    "dotenv": "^16.4.5",
+    "ethereum-waffle": "^4.0.10",
+    "hardhat": "^2.22.9",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.2.2"
+  }
+}

@@ -1,0 +1,45 @@
+{
+  "name": "toolblox-lz-migrations",
+  "version": "1.0.0",
+  "description": "LayerZero Read configuration and migration tools for Toolblox",
+  "main": "index.js",
+  "scripts": {
+    "verify": "npx hardhat run scripts/simple-verify.ts",
+    "verify:arbitrum": "npx hardhat run scripts/simple-verify.ts --network arbitrumSepolia",
+    "verify:base": "npx hardhat run scripts/simple-verify.ts --network baseSepolia",
+    "wire-read": "npx ts-node scripts/sync-deployments.ts && npx hardhat lz:oapp-read:wire --oapp-config layerzero.config.ts",
+    "wire-read:testnet": "npx ts-node scripts/sync-deployments.ts --testnet && wire-testnet.bat",
+    "wire-read:mainnet": "npx ts-node scripts/sync-deployments.ts --mainnet && wire-mainnet.bat",
+    "wire:arbitrum": "HARDHAT_NETWORK=arbitrumSepolia npx hardhat lz:oapp-read:wire --oapp-config layerzero.config.ts",
+    "wire:base": "HARDHAT_NETWORK=baseSepolia npx hardhat lz:oapp-read:wire --oapp-config layerzero.config.ts",
+    "check-wired": "npx ts-node scripts/check-wired-status.ts",
+    "check-wired:testnet": "set LZ_CHECK_ENV=testnet && npx ts-node scripts/check-wired-status.ts",
+    "check-wired:mainnet": "set LZ_CHECK_ENV=mainnet && npx ts-node scripts/check-wired-status.ts",
+    "fix-all": "npm run verify:arbitrum && npm run verify:base && npm run wire-read && npm run verify:arbitrum && npm run verify:base",
+    "fix-all:testnet": "npm run check-wired:testnet && npm run wire-read:testnet",
+    "fix-all:mainnet": "npm run check-wired:mainnet && npm run wire-read:mainnet",
+    "fetch-addresses": "npx ts-node scripts/fetch-lz-addresses.ts",
+    "manual-wire": "npx hardhat run scripts/manual-wire-readlib.ts",
+    "manual-wire:arbitrum": "npx hardhat run scripts/manual-wire-readlib.ts --network arbitrumSepolia",
+    "manual-wire:base": "npx hardhat run scripts/manual-wire-readlib.ts --network baseSepolia",
+    "check-owner": "npx hardhat run scripts/check-owner.ts",
+    "check-owner:arbitrum": "npx hardhat run scripts/check-owner.ts --network arbitrumSepolia",
+    "check-owner:base": "npx hardhat run scripts/check-owner.ts --network baseSepolia"
+  },
+  "dependencies": {
+    "@layerzerolabs/lz-definitions": "^3.0.128",
+    "@layerzerolabs/lz-v2-utilities": "^3.0.128", 
+    "@layerzerolabs/toolbox-hardhat": "^0.6.12",
+    "@nomiclabs/hardhat-ethers": "^2.2.3",
+    "ethers": "^5.7.2",
+    "hardhat": "^2.22.15",
+    "hardhat-deploy": "^0.12.4",
+    "typescript": "^5.2.2",
+    "ts-node": "^10.9.1",
+    "dotenv": "^16.4.5",
+    "node-fetch": "^2.7.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0"
+  }
+}

@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>TixToken Ownership</title>
+    <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+</head>
+<body>
+    <h1>TixToken Ownership Manager</h1>
+    
+    <div>
+        <label>Chain:</label>
+        <select id="chainSelect">
+            <option value="1">Ethereum Mainnet</option>
+            <option value="8453">Base Mainnet</option>
+            <option value="42161">Arbitrum</option>
+            <option value="84532">Base Sepolia</option>
+            <option value="421614">Arbitrum Sepolia</option>
+            <option value="296">Hedera Testnet</option>
+        </select>
+    </div>
+    
+    <div>
+        <label>TixToken Address:</label>
+        <input type="text" id="tokenAddress" placeholder="0x..." style="width: 400px;">
+    </div>
+    
+    <div>
+        <label>New Owner Address:</label>
+        <input type="text" id="newOwner" placeholder="0x..." style="width: 400px;">
+    </div>
+    
+    <button onclick="connectWallet()">Connect MetaMask</button>
+    <button onclick="checkOwnership()">Check Status</button>
+    <button onclick="proposeOwnership()">Propose Ownership</button>
+    <button onclick="acceptOwnership()">Accept Ownership</button>
+    
+    <div id="status"></div>
+    
+    <script>
+        let provider, signer;
+        
+        const ABI = [
+            "function owner() view returns (address)",
+            "function pendingOwner() view returns (address)",
+            "function transferOwnership(address newOwner)",
+            "function acceptOwnership()"
+        ];
+        
+        // TIX addresses by chainId
+        const TIX_ADDRESSES = {
+            1: "0x6994199717e1396ad91Bf12B41FbEFcD218e25A7", // ethereum
+            8453: "0x6994199717e1396ad91Bf12B41FbEFcD218e25A7", // base
+            42161: "0x6994199717e1396ad91Bf12B41FbEFcD218e25A7", // arbitrum
+            84532: "0x9B3AD2533a7Db882C72E4C403e45c64F4A7E3F5b", // base-sepolia
+            421614: "0x49D2Faa5542986e58610383307D21827CbE03B06", // arbitrum-sepolia
+            296: "0x34C11B7D52fB6c4D49784748d55C601Ffbd41a7e" // hedera-testnet
+        };
+        
+        async function connectWallet() {
+            if (typeof window.ethereum !== 'undefined') {
+                provider = new ethers.providers.Web3Provider(window.ethereum);
+                await provider.send("eth_requestAccounts", []);
+                signer = provider.getSigner();
+                const address = await signer.getAddress();
+                document.getElementById('newOwner').value = address;
+                updateTixAddress();
+                document.getElementById('status').innerHTML = `Connected: ${address}`;
+            } else {
+                alert('MetaMask not found');
+            }
+        }
+        
+        function updateTixAddress() {
+            const chainId = document.getElementById('chainSelect').value;
+            const tixAddress = TIX_ADDRESSES[chainId];
+            if (tixAddress) {
+                document.getElementById('tokenAddress').value = tixAddress;
+            }
+        }
+        
+        // Update TIX address when chain changes
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('chainSelect').addEventListener('change', updateTixAddress);
+            updateTixAddress(); // Set initial value
+        });
+        
+        async function switchChain() {
+            const chainId = document.getElementById('chainSelect').value;
+            const hexChainId = `0x${parseInt(chainId).toString(16)}`;
+            
+            try {
+                await window.ethereum.request({
+                    method: 'wallet_switchEthereumChain',
+                    params: [{ chainId: hexChainId }],
+                });
+            } catch (error) {
+                // If chain doesn't exist, try to add it
+                if (error.code === 4902) {
+                    try {
+                        const networkConfig = getNetworkConfig(chainId);
+                        if (networkConfig) {
+                            await window.ethereum.request({
+                                method: 'wallet_addEthereumChain',
+                                params: [networkConfig],
+                            });
+                        } else {
+                            document.getElementById('status').innerHTML = `Unsupported network: ${chainId}`;
+                        }
+                    } catch (addError) {
+                        document.getElementById('status').innerHTML = `Failed to add network: ${addError.message}`;
+                    }
+                } else {
+                    document.getElementById('status').innerHTML = `Chain switch failed: ${error.message}`;
+                }
+            }
+        }
+        
+        function getNetworkConfig(chainId) {
+            const configs = {
+                296: {
+                    chainId: '0x128',
+                    chainName: 'Hedera Testnet',
+                    nativeCurrency: {
+                        name: 'HBAR',
+                        symbol: 'HBAR',
+                        decimals: 18,
+                    },
+                    rpcUrls: ['https://testnet.hashio.io/api'],
+                    blockExplorerUrls: ['https://hashscan.io/testnet'],
+                }
+            };
+            return configs[chainId] || null;
+        }
+        
+        async function checkOwnership() {
+            if (!signer) return alert('Connect wallet first');
+            
+            const address = document.getElementById('tokenAddress').value;
+            if (!address) return alert('Enter token address');
+            
+            await switchChain();
+            
+            const contract = new ethers.Contract(address, ABI, provider);
+            try {
+                const owner = await contract.owner();
+                let pending = "0x0000000000000000000000000000000000000000";
+                try {
+                    pending = await contract.pendingOwner();
+                } catch {}
+                
+                document.getElementById('status').innerHTML = `
+                    Current Owner: ${owner}<br>
+                    Pending Owner: ${pending}<br>
+                    Your Address: ${await signer.getAddress()}
+                `;
+            } catch (error) {
+                document.getElementById('status').innerHTML = `Error: ${error.message}`;
+            }
+        }
+        
+        async function proposeOwnership() {
+            if (!signer) return alert('Connect wallet first');
+            
+            const address = document.getElementById('tokenAddress').value;
+            const newOwner = document.getElementById('newOwner').value;
+            if (!address || !newOwner) return alert('Enter both addresses');
+            
+            await switchChain();
+            
+            const contract = new ethers.Contract(address, ABI, signer);
+            try {
+                const tx = await contract.transferOwnership(newOwner, { gasLimit: 100000 });
+                document.getElementById('status').innerHTML = `Transaction sent: ${tx.hash}`;
+                await tx.wait();
+                document.getElementById('status').innerHTML = `Ownership proposed! TX: ${tx.hash}`;
+            } catch (error) {
+                document.getElementById('status').innerHTML = `Error: ${error.message}`;
+            }
+        }
+        
+        async function acceptOwnership() {
+            if (!signer) return alert('Connect wallet first');
+            
+            const address = document.getElementById('tokenAddress').value;
+            if (!address) return alert('Enter token address');
+            
+            document.getElementById('status').innerHTML = '🔄 Switching chain...';
+            
+            try {
+                await switchChain();
+                document.getElementById('status').innerHTML = '🔄 Preparing transaction...';
+                
+                const contract = new ethers.Contract(address, ABI, signer);
+                
+                // Check if we're the pending owner first
+                const pendingOwner = await contract.pendingOwner();
+                const myAddress = await signer.getAddress();
+                
+                if (pendingOwner.toLowerCase() !== myAddress.toLowerCase()) {
+                    document.getElementById('status').innerHTML = `❌ You are not the pending owner. Pending: ${pendingOwner}`;
+                    return;
+                }
+                
+                document.getElementById('status').innerHTML = '🔄 Sending transaction to MetaMask...<br><small>If no popup, try switching to Arbitrum Sepolia!</small>';
+                
+                // Debug: Log the contract and network
+                console.log('Contract address:', address);
+                console.log('Network:', await provider.getNetwork());
+                console.log('Signer address:', await signer.getAddress());
+                
+                // Try with minimal gas settings first
+                const txOptions = {
+                    gasLimit: 100000,
+                    gasPrice: ethers.utils.parseUnits('1', 'gwei') // Very low gas price
+                };
+                
+                document.getElementById('status').innerHTML = '🔄 Calling acceptOwnership()...';
+                
+                // Use sendTransaction directly for better mobile MetaMask compatibility
+                const iface = new ethers.utils.Interface(ABI);
+                const txData = iface.encodeFunctionData('acceptOwnership', []);
+                
+                const tx = await signer.sendTransaction({
+                    to: address,
+                    data: txData,
+                    gasLimit: 100000,
+                    gasPrice: ethers.utils.parseUnits('1', 'gwei')
+                });
+                document.getElementById('status').innerHTML = `⏳ Transaction sent: ${tx.hash}<br>Waiting for confirmation...`;
+                
+                await tx.wait();
+                document.getElementById('status').innerHTML = `✅ Ownership accepted!<br>TX: ${tx.hash}`;
+                
+            } catch (error) {
+                console.error('Accept ownership error:', error);
+                if (error.code === 4001) {
+                    document.getElementById('status').innerHTML = '❌ Transaction rejected by user';
+                } else if (error.code === -32603) {
+                    document.getElementById('status').innerHTML = '❌ Transaction failed - check if you are the pending owner';
+                } else {
+                    document.getElementById('status').innerHTML = `❌ Error: ${error.message || error}`;
+                }
+            }
+        }
+    </script>
+</body>
+</html>

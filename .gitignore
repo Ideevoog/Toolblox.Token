@@ -1,0 +1,13 @@
+**/bin/*
+**/.bin/*
+**/node_modules/*
+cache/*
+artifacts/*
+coverage/*
+typechain-types/*
+
+__azurite*
+__blobstorage__/*
+
+lz-migrations/.env
+.env
