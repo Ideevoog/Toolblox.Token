@@ -31,7 +31,8 @@ contract TbxToken is ERC20PresetMinterPauser, Ownable2Step, IServiceLocator {
     {
         if (_registrationFee > 0)
         {
-            _transfer(_msgSender(), _owner, _registrationFee);
+            _burn(_msgSender(), _registrationFee);
+            //_transfer(_msgSender(), _owner, _registrationFee);
         }
         repository[name] = destination;
         emit ServiceRegistered(name, destination);
