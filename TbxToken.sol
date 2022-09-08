@@ -27,14 +27,6 @@ contract TbxToken is ERC20PresetMinterPauser, Ownable2Step, IServiceLocator {
         _schedulerFee = fee;
     }
 
-    function getRegistrationFee() external view returns (uint) {
-        return _registrationFee;
-    }
-
-    function getSchedulerFee() external view returns (uint) {
-        return _schedulerFee;
-    }
-
     function registerService(bytes32 name, address destination) public
     {
         if (_registrationFee > 0)
@@ -84,11 +76,11 @@ contract TbxToken is ERC20PresetMinterPauser, Ownable2Step, IServiceLocator {
         return true;
     }
 
-    function getService(bytes32 name) external view returns (address) {
+    function getService(bytes32 name) override external view returns (address) {
         return repository[name];
     }
 
-    function getScheduler(address service) external view returns (address) {
+    function getScheduler(address service) override external view returns (address) {
         return schedulers[service];
     }
 
