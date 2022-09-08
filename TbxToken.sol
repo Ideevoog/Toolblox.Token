@@ -1,36 +1,63 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.7.0 <0.9.0;
 import "./ERC20PresetMinterPauser.sol";
+import "./Ownable2Step.sol";
 import "./IServiceLocator.sol";
 
-contract TbxToken is ERC20PresetMinterPauser, IServiceLocator {
+contract TbxToken is ERC20PresetMinterPauser, Ownable2Step, IServiceLocator {
     bytes32 public constant SERVICE_WORKER = keccak256("SERVICE_WORKER");
+    bytes32 public constant BALANCER = keccak256("BALANCER");
     mapping(bytes32 => address) public repository;
     mapping(address => address) public schedulers;
+    uint public _registrationFee;
+    uint public _schedulerFee;
 
     constructor(uint256 initialSupply) ERC20PresetMinterPauser("Toolblox Token", "TBX") {
         _setupRole(SERVICE_WORKER, _msgSender());
         _mint(_msgSender(), initialSupply);
     }
 
-    /* ========== RESTRICTED FUNCTIONS ========== */
+    function setRegistrationFee(uint fee) public {
+        _setupRole(BALANCER, _msgSender());
+        _registrationFee = fee;
+    }
 
-    function registerService(bytes32[] calldata names, address[] calldata destinations) public {
+    function setSchedulerFee(uint fee) public {
+        _setupRole(BALANCER, _msgSender());
+        _schedulerFee = fee;
+    }
+
+    function getRegistrationFee() external view returns (uint) {
+        return _registrationFee;
+    }
+
+    function getSchedulerFee() external view returns (uint) {
+        return _schedulerFee;
+    }
+
+    function registerService(bytes32 name, address destination) public
+    {
+        if (_registrationFee > 0)
+        {
+            _transfer(_msgSender(), _owner, _registrationFee);
+        }
+        repository[name] = destination;
+        emit ServiceRegistered(name, destination);
+    }
+
+    function registerServices(bytes32[] calldata names, address[] calldata destinations) public {
         require(hasRole(SERVICE_WORKER, _msgSender()), "TbxToken: must have service worker role to register services");
         require(names.length == destinations.length, "Input lengths must match");
-
         for (uint i = 0; i < names.length; i++) {
             bytes32 name = names[i];
             address destination = destinations[i];
-            repository[name] = destination;
-            emit ServiceRegistered(name, destination);
+            registerService(name, destination);
         }
     }
 
-    function registerScheduler(address[] calldata services, address[] calldata destinations) public {
+    function registerSchedulers(address[] calldata services, address[] calldata destinations) public {
         require(hasRole(SERVICE_WORKER, _msgSender()), "TbxToken: must have service worker role to register schedulers");
         require(services.length == destinations.length, "Input lengths must match");
-
         for (uint i = 0; i < services.length; i++) {
             address service = services[i];
             address destination = destinations[i];
@@ -38,8 +65,6 @@ contract TbxToken is ERC20PresetMinterPauser, IServiceLocator {
             emit SchedulerRegistered(service, destination);
         }
     }
-
-    /* ========== VIEWS ========== */
 
     function areServicesRegistered(bytes32[] calldata names, address[] calldata destinations) external view returns (bool) {
         for (uint i = 0; i < names.length; i++) {
@@ -66,8 +91,6 @@ contract TbxToken is ERC20PresetMinterPauser, IServiceLocator {
     function getScheduler(address service) external view returns (address) {
         return schedulers[service];
     }
-
-    /* ========== EVENTS ========== */
 
     event ServiceRegistered(bytes32 name, address destination);
     event SchedulerRegistered(address service, address scheduler);
