@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.7.0 <0.9.0;
-import "./ERC20PresetMinterPauser.sol";
-import "./Ownable2Step.sol";
+import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/v4.7.3/contracts/token/ERC20/presets/ERC20PresetMinterPauser.sol";
+import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/v4.7.3/contracts/access/Ownable.sol";
 import "./IServiceLocator.sol";
 
-contract TbxToken is ERC20PresetMinterPauser, Ownable2Step, IServiceLocator {
+contract TbxToken is ERC20PresetMinterPauser, Ownable, IServiceLocator {
     bytes32 public constant SERVICE_WORKER = keccak256("SERVICE_WORKER");
     bytes32 public constant BALANCER = keccak256("BALANCER");
     mapping(bytes32 => address) public repository;
