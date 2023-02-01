@@ -4,7 +4,7 @@ import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/v4.7.3/contr
 import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/v4.7.3/contracts/access/Ownable.sol";
 import "./IServiceLocator.sol";
 
-contract TbxToken is ERC20PresetMinterPauser, Ownable, IServiceLocator {	
+contract TixToken is ERC20PresetMinterPauser, Ownable, IServiceLocator {	
 	struct ServiceRegistration {
 		address destination;
 		address owner;
@@ -25,35 +25,36 @@ contract TbxToken is ERC20PresetMinterPauser, Ownable, IServiceLocator {
 	}
 
 	function setRegistrationFee(uint fee) public {
-		require(hasRole(BALANCER, _msgSender()), "TbxToken: must have balancer role to update fees");		
+		require(hasRole(BALANCER, _msgSender()), "TixToken: must have balancer role to update fees");		
 		_registrationFee = fee;
 	}
 
 	function setSchedulerFee(uint fee) public {
-		require(hasRole(BALANCER, _msgSender()), "TbxToken: must have balancer role to update fees");		
+		require(hasRole(BALANCER, _msgSender()), "TixToken: must have balancer role to update fees");		
 		_schedulerFee = fee;
 	}
 
-	function registerService(bytes32 name, bytes memory code) override public returns (address)
+	function registerService(string calldata name, bytes memory code) override public returns (address)
 	{
 		address sender = _msgSender();
 		if (_registrationFee > 0)
 		{
-			require(balanceOf(sender) >= _registrationFee, "TbxToken: Not enough TIX to register a service");
+			require(balanceOf(sender) >= _registrationFee, "TixToken: Not enough TIX to register a service");
 			_transfer(sender, owner(), _registrationFee);
 		}
-		address currentOwner = repository[name].owner;
-		require(currentOwner == address(0) || currentOwner == sender, "TbxToken: Only owner can update a service registration");
+		bytes32 nameHash = keccak256(abi.encodePacked(name));
+		address currentOwner = repository[nameHash].owner;
+		require(currentOwner == address(0) || currentOwner == sender, "TixToken: Only owner can update a service registration");
 		
 		_counter = _counter + 1;
-		address destination = deploy(abi.encodePacked(code, abi.encode(sender)), _counter);
-		_registerService(name, destination, sender);
+		address destination = deploy(code, keccak256(abi.encodePacked(_counter, sender)));
+		_registerService(nameHash, destination, sender);
 		return destination;
 	}
 	
-	function deploy(bytes memory _initCode, uint _salt)
+	function deploy(bytes memory _initCode, bytes32 _salt)
         private
-        returns (address payable createdContract)
+        returns (address createdContract)
     {
         assembly {
             createdContract := create2(0, add(_initCode, 0x20), mload(_initCode), _salt)
@@ -61,7 +62,8 @@ contract TbxToken is ERC20PresetMinterPauser, Ownable, IServiceLocator {
 				revert(0, 0)
 			}
         }
-		require(createdContract != address(0), "Deployment failed");
+		(bool success, ) = createdContract.call(abi.encodeWithSignature("setOwner(address)", _msgSender()));
+		require(success, "Owner cannot be set");
     }
 
 	function _registerService(bytes32 name, address destination, address owner) private
@@ -71,7 +73,7 @@ contract TbxToken is ERC20PresetMinterPauser, Ownable, IServiceLocator {
 	}
 
 	function registerServices(bytes32[] calldata names, ServiceRegistration[] calldata destinations) public {
-		require(hasRole(SERVICE_WORKER, _msgSender()), "TbxToken: must have service worker role to register services");
+		require(hasRole(SERVICE_WORKER, _msgSender()), "TixToken: must have service worker role to register services");
 		require(names.length == destinations.length, "Input lengths must match");
 		for (uint i = 0; i < names.length; i++) {
 			bytes32 name = names[i];
@@ -81,7 +83,7 @@ contract TbxToken is ERC20PresetMinterPauser, Ownable, IServiceLocator {
 	}
 
 	function registerSchedulers(address[] calldata services, address[] calldata destinations) public {
-		require(hasRole(SERVICE_WORKER, _msgSender()), "TbxToken: must have service worker role to register schedulers");
+		require(hasRole(SERVICE_WORKER, _msgSender()), "TixToken: must have service worker role to register schedulers");
 		require(services.length == destinations.length, "Input lengths must match");
 		for (uint i = 0; i < services.length; i++) {
 			address service = services[i];
