@@ -13,9 +13,7 @@ contract TixToken is ERC20PresetMinterPauser, Ownable, IServiceLocator {
 	bytes32 public constant SERVICE_WORKER = keccak256("SERVICE_WORKER");
 	bytes32 public constant BALANCER = keccak256("BALANCER");
 	mapping(bytes32 => ServiceRegistration) public repository;
-	mapping(address => address) public schedulers;
 	uint public _registrationFee;
-	uint public _schedulerFee;
 	uint public _counter;
 
 	constructor(uint256 initialSupply) ERC20PresetMinterPauser("Toolblox Token", "TIX") {
@@ -29,12 +27,7 @@ contract TixToken is ERC20PresetMinterPauser, Ownable, IServiceLocator {
 		_registrationFee = fee;
 	}
 
-	function setSchedulerFee(uint fee) public {
-		require(hasRole(BALANCER, _msgSender()), "TixToken: must have balancer role to update fees");		
-		_schedulerFee = fee;
-	}
-
-	function registerService(string calldata name, bytes memory code) override public returns (address)
+	function registerService(string calldata name, bytes calldata code) override public returns (address)
 	{
 		address sender = _msgSender();
 		if (_registrationFee > 0)
@@ -82,29 +75,9 @@ contract TixToken is ERC20PresetMinterPauser, Ownable, IServiceLocator {
 		}
 	}
 
-	function registerSchedulers(address[] calldata services, address[] calldata destinations) public {
-		require(hasRole(SERVICE_WORKER, _msgSender()), "TixToken: must have service worker role to register schedulers");
-		require(services.length == destinations.length, "Input lengths must match");
-		for (uint i = 0; i < services.length; i++) {
-			address service = services[i];
-			address destination = destinations[i];
-			schedulers[service] = destination;
-			emit SchedulerRegistered(service, destination);
-		}
-	}
-
 	function areServicesRegistered(bytes32[] calldata names, address[] calldata destinations) external view returns (bool) {
 		for (uint i = 0; i < names.length; i++) {
 			if (repository[names[i]].destination != destinations[i]) {
-				return false;
-			}
-		}
-		return true;
-	}
-
-	function areSchedulersRegistered(address[] calldata services, address[] calldata destinations) external view returns (bool) {
-		for (uint i = 0; i < services.length; i++) {
-			if (schedulers[services[i]] != destinations[i]) {
 				return false;
 			}
 		}
@@ -115,10 +88,5 @@ contract TixToken is ERC20PresetMinterPauser, Ownable, IServiceLocator {
 		return repository[name].destination;
 	}
 
-	function getScheduler(address service) override external view returns (address) {
-		return schedulers[service];
-	}
-
 	event ServiceRegistered(bytes32 _name, address _destination);
-	event SchedulerRegistered(address _service, address _scheduler);
 }
