@@ -1,2 +1,2 @@
 # Toolblox.Token
-TBX Token Repo
+TIX Token Repo
