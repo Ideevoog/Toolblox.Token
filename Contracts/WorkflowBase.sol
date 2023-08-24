@@ -26,7 +26,6 @@ contract WorkflowBase is Context {
         }
         return latestIds;
     }
-
     function getPageIds(uint256 cursor, uint256 howMany) public view returns(uint256[] memory) {
         uint256[] memory idsToReturn = new uint256[](howMany);
         uint256 len = 0;
@@ -36,17 +35,14 @@ contract WorkflowBase is Context {
             cursor++;
         }
         return idsToReturn;
-    }
-    
+    }    
     function addFkMappingItem(mapping(uint => uint[]) storage itemMap, uint foreignKey, uint itemId) internal {
 		itemMap[foreignKey].push(itemId);
 	}
-
 	function removeFkMappingItem(mapping(uint => uint[]) storage itemMap, uint foreignKey, uint itemId) internal {
 		uint[] storage itemArray = itemMap[foreignKey];
 		uint indexToBeDeleted;
 		bool itemFound = false;
-
 		// Find the index of the item to be deleted
 		for(uint i = 0; i < itemArray.length; i++) {
 			if(itemArray[i] == itemId) {
@@ -55,16 +51,22 @@ contract WorkflowBase is Context {
 				break;
 			}
 		}
-
 		// If the item is found, remove it from the list
 		if(itemFound) {
 			itemArray[indexToBeDeleted] = itemArray[itemArray.length - 1];
 			itemArray.pop();
 		}
 	}
-
     function toString(uint256 value) internal pure returns (string memory) {
 		return Strings.toString(value);
+	}    
+    function safeTransferFromExternal(address token_, address from, address to, uint value) internal {
+		(bool success, bytes memory data) = token_.call(abi.encodeWithSelector(0x23b872dd, from, to, value));
+		require(success && (data.length == 0 || abi.decode(data, (bool))), 'TransferHelper::transferFrom: transferFrom failed');
+	}
+	function safeTransferExternal(address token_, address to, uint256 value) internal {
+		(bool success, bytes memory data) = token_.call(abi.encodeWithSelector(0xa9059cbb, to, value));
+		require(success && (data.length == 0 || abi.decode(data, (bool))), 'TransferHelper::safeTransfer: transfer failed');
 	}
 }
 
