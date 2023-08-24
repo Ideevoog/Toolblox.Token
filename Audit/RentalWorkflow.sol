@@ -18,9 +18,7 @@ contract RentalWorkflow  is WorkflowBase, Ownable{
 	}
 	event ItemUpdated(uint256 _id, uint64 _status);
 	mapping(uint => Rental) public items;
-	IExternalServiceLocator serviceLocator;
 	address public token = 0x02CBE6055F8aad745321f70d6aDD4711455c7F45;
-	bytes32 public constant RENTER_ROLE = keccak256("RENTER_ROLE");
 	function _assertOnlyRenter(Rental memory item) private view {
 		address renter = item.renter;
 		if (renter != address(0))
@@ -33,7 +31,6 @@ contract RentalWorkflow  is WorkflowBase, Ownable{
 	
 	constructor()  {
 		_transferOwnership(_msgSender());
-		serviceLocator = IExternalServiceLocator(0xaD26E98e521ef7Cd31c4a915Fe71560C968C37Db);
 	}
 	receive() external payable {}
 	fallback() external payable {}
@@ -130,16 +127,6 @@ contract RentalWorkflow  is WorkflowBase, Ownable{
 		emit ItemUpdated(id, item.status);
 		return id;
 	}
-	function increaseAllowance(uint256 id) external returns (uint256) {
-		Rental memory item = getItem(id);
-		_assertOnlyRenter(item);
-		_assertStatus(item, 2);
-
-		item.status = 2;
-		items[id] = item;
-		emit ItemUpdated(id, item.status);
-		return id;
-	}
 	function chargeWithCollateral(uint256 id) external returns (uint256) {
 		Rental memory item = getItem(id);
 		_checkOwner();
@@ -209,16 +196,6 @@ contract RentalWorkflow  is WorkflowBase, Ownable{
 		if (owner() != address(0) && item.renter != address(0) && item.leftoverCharge > 0){
 			safeTransferFromExternal(token, item.renter, owner(), item.leftoverCharge);
 		}
-		emit ItemUpdated(id, item.status);
-		return id;
-	}
-	function updateAllowance(uint256 id) external returns (uint256) {
-		Rental memory item = getItem(id);
-		_assertOnlyRenter(item);
-		_assertStatus(item, 1);
-
-		item.status = 1;
-		items[id] = item;
 		emit ItemUpdated(id, item.status);
 		return id;
 	}
