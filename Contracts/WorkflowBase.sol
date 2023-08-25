@@ -2,9 +2,9 @@
 pragma solidity ^0.8.0;
 import "@openzeppelin/contracts/utils/Context.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
-
 contract WorkflowBase is Context {
     uint256 internal count = 0;
+	IExternalServiceLocator internal serviceLocator;
     function _getNextId() internal returns (uint256) {
         count++;
         return count;
