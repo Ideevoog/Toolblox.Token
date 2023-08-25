@@ -1,9 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0
 pragma solidity ^0.8.0;
-import "https://raw.githubusercontent.com/Ideevoog/Toolblox.Token/main/Contracts/WorkflowBase.sol";
-import "https://raw.githubusercontent.com/OpenZeppelin/openzeppelin-contracts/v4.9.3/contracts/access/Ownable.sol";
-
-
+import "../Contracts/WorkflowBase.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 /*
     A generic rental agreement contract.
     Rental states:
