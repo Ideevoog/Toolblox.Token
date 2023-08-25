@@ -1,7 +1,8 @@
 // SPDX-License-Identifier: GPL-3.0
 pragma solidity ^0.8.0;
-import "../Contracts/WorkflowBase.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
+import "https://raw.githubusercontent.com/Ideevoog/Toolblox.Token/main/Contracts/WorkflowBase.sol";
+import "https://raw.githubusercontent.com/OpenZeppelin/openzeppelin-contracts/v4.9.3/contracts/access/Ownable.sol";
+
 
 /*
     A generic rental agreement contract.
@@ -12,7 +13,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
         4:Settled
         5:Completed
  */
-contract RentalWorkflow  is WorkflowBase, Ownable{
+ contract RentalWorkflow  is WorkflowBase, Ownable{
 	struct Rental {
 		uint id;
 		string name;
@@ -37,7 +38,6 @@ contract RentalWorkflow  is WorkflowBase, Ownable{
 		}
 		item.renter = _msgSender();
 	}
-	
 	constructor()  {
 		_transferOwnership(_msgSender());
 	}
@@ -202,7 +202,6 @@ contract RentalWorkflow  is WorkflowBase, Ownable{
 		emit ItemUpdated(id, item.status);
 		return id;
 	}
-
     /*
         To release collateral from the smart contract. The owner can specify charge amount if there is potential damage to the item.
         For example if collateral is 1000 and damage is 200, then renter would receive 800 and owner 200.
@@ -220,10 +219,6 @@ contract RentalWorkflow  is WorkflowBase, Ownable{
 		emit ItemUpdated(id, item.status);
 		return id;
 	}
-    /*
-        In case the same item can go back to circulation, this provides a convenience method.
-        The benefit is that the item retains full history of all rentals.
-     */
 	function makeAvailable(uint256 id,string calldata name,uint collateral,uint pricePerDay) external returns (uint256) {
 		Rental memory item = getItem(id);
 		_checkOwner();
@@ -236,7 +231,6 @@ contract RentalWorkflow  is WorkflowBase, Ownable{
 		item.leftoverCharge = 0;
 		item.daysCharged = 0;
 		item.numberOfDays = 0;
-		item.collateral = 0;
 		item.status = 3;
 		items[id] = item;
 		emit ItemUpdated(id, item.status);
