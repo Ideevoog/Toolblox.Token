@@ -44,13 +44,13 @@ contract TixToken is ERC20PresetMinterPauser, Ownable, IServiceLocator {
 		require(currentOwner == address(0) || currentOwner == sender, "TixToken: Only owner can update a service registration");
 		
 		//pre-compute the destination address
+		_counter = _counter + 1;
 		address predictedAddress = computeAddress(code, keccak256(abi.encodePacked(_counter, sender)));
 
 		//book service address to the sender
 		_registerService(nameHash, predictedAddress, spec, sender);
 
 		//deploy and check if address is the same as precomputed
-		_counter = _counter + 1;
 		address destination = deploy(code, keccak256(abi.encodePacked(_counter, sender)));
 		require(predictedAddress == destination, "Deployed address mismatch");
 
