@@ -1,10 +1,11 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.19;
 import "@openzeppelin/contracts/utils/Context.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
 contract WorkflowBase is Context {
 	uint256 internal count = 0;
 	IExternalServiceLocator internal serviceLocator;
+	event ItemUpdated(uint256 _id, uint64 _status);
 	function _getNextId() internal returns (uint256) {
 		count++;
 		return count;
@@ -15,10 +16,10 @@ contract WorkflowBase is Context {
 		if (cnt < toIndex) {
 			fromIndex = toIndex - cnt;
 		}
-		if (fromIndex > toIndex || toIndex < 0) {
+		if (fromIndex > toIndex || toIndex == 0) {
 			return new uint256[](0);
 		}
-		uint256[] memory latestIds = new uint256[](cnt);
+		uint256[] memory latestIds = new uint256[](toIndex - fromIndex);
 		uint256 setterCount = 0;
 		for(uint256 i=fromIndex; i < toIndex; i++) {
 			latestIds[setterCount] = i + 1;

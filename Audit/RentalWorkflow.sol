@@ -24,7 +24,6 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 		uint64 numberOfDays;
 		uint64 status;
 	}
-	event ItemUpdated(uint256 _id, uint64 _status);
 	mapping(uint => Rental) public items;
 	address public token = 0x02CBE6055F8aad745321f70d6aDD4711455c7F45;
 	function _assertOnlyRenter(Rental memory item) private view {
