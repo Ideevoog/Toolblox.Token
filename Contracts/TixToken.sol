@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.19;
+pragma solidity ^0.8.0;
 import "@openzeppelin/contracts/token/ERC20/presets/ERC20PresetMinterPauser.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "./IServiceLocator.sol";
@@ -30,7 +30,7 @@ contract TixToken is ERC20PresetMinterPauser, Ownable, IServiceLocator {
 		_registrationFee = fee;
 	}
 
-	function registerService(string calldata name, string calldata spec, bytes calldata code) override public returns (address)
+	function registerService(string calldata name, string calldata spec, bytes calldata code) override public whenNotPaused returns (address)
 	{
 		address sender = _msgSender();
 		if (_registrationFee > 0)
