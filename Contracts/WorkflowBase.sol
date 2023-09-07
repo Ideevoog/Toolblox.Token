@@ -5,7 +5,7 @@ import "@openzeppelin/contracts/utils/Strings.sol";
 contract WorkflowBase is Context {
 	uint256 internal count = 0;
 	IExternalServiceLocator internal serviceLocator;
-	event ItemUpdated(uint256 _id, uint64 _status);
+	event ItemUpdated(uint256 indexed _id, uint64 indexed _status);
 	function _getNextId() internal returns (uint256) {
 		count++;
 		return count;
