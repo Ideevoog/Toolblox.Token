@@ -3,6 +3,7 @@ pragma solidity ^0.8.0;
 import "../Contracts/WorkflowBase.sol";
 import "../Contracts/OwnerPausable.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 /*
 	### Rental Smart Contract:
 	
@@ -59,7 +60,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 	
 	Use testnet tokens to test. Tokens can be acquired here: https://faucet.polygon.technology/ (Test ERC20).
 */
-contract RentalWorkflow  is WorkflowBase, Ownable, OwnerPausable{
+contract RentalWorkflow  is WorkflowBase, Ownable, ReentrancyGuard, OwnerPausable{
 	struct Rental {
 		uint id;
 		string name;
@@ -150,7 +151,7 @@ contract RentalWorkflow  is WorkflowBase, Ownable, OwnerPausable{
 	In the end a payment is made.
 	A payment in the amount of `Collateral` is made from caller to the workflow.
 */
-	function startRent(uint256 id,uint64 numberOfDays,uint allowance) external whenNotPaused  returns (uint256) {
+	function startRent(uint256 id,uint64 numberOfDays,uint allowance) external whenNotPaused nonReentrant returns (uint256) {
 		Rental memory item = getItem(id);
 		_assertOrAssignRenter(item);
 		_assertStatus(item, 3);
@@ -183,7 +184,7 @@ contract RentalWorkflow  is WorkflowBase, Ownable, OwnerPausable{
 	In the end a payment is made.
 	A payment in the amount of `Leftover charge` is made from the address specified in the `Renter` property to the workflow owner.
 */
-	function charge(uint256 id) external onlyOwner whenNotPaused  returns (uint256) {
+	function charge(uint256 id) external onlyOwner whenNotPaused nonReentrant returns (uint256) {
 		Rental memory item = getItem(id);
 		_assertStatus(item, 1);
 		uint daysToCharge = ( ( block.timestamp - item.startTime ) / ( ( 24 * 60 ) * 60 ) ) - item.daysCharged;
@@ -214,7 +215,7 @@ contract RentalWorkflow  is WorkflowBase, Ownable, OwnerPausable{
 	*  `End time` = `Start time + ( ( ( Number of days * 24 ) * 60 ) * 60 )`
 	* `Leftover charge` = `Nominal fee + ( ( now > End time ) ? ( ( End time - now ) * ( ( ( Price per day / 24 ) / 60 ) / 60 ) ) : 0 )`
 */
-	function endRental(uint256 id) external whenNotPaused  returns (uint256) {
+	function endRental(uint256 id) external whenNotPaused nonReentrant returns (uint256) {
 		Rental memory item = getItem(id);
 		require(item.renter == _msgSender() || owner() == _msgSender(), "Access restricted to: renter, workflow owner");
 		_assertStatus(item, 1);
@@ -247,7 +248,7 @@ contract RentalWorkflow  is WorkflowBase, Ownable, OwnerPausable{
 	* `Collateral` (Money)
 	* `Price per day` (Money)
 */
-	function registerItem(string calldata name,uint collateral,uint pricePerDay) external onlyOwner whenNotPaused  returns (uint256) {
+	function registerItem(string calldata name,uint collateral,uint pricePerDay) external onlyOwner whenNotPaused nonReentrant returns (uint256) {
 		uint256 id = _getNextId();
 		Rental memory item;
 		item.id = id;
@@ -282,7 +283,7 @@ contract RentalWorkflow  is WorkflowBase, Ownable, OwnerPausable{
 	In the end a payment is made.
 	A payment in the amount of `Charge amount` is made from the address specified in the `Renter` property to the workflow owner.
 */
-	function finalCharge(uint256 id,uint chargeAmount) external onlyOwner whenNotPaused  returns (uint256) {
+	function finalCharge(uint256 id,uint chargeAmount) external onlyOwner whenNotPaused nonReentrant returns (uint256) {
 		Rental memory item = getItem(id);
 		_assertStatus(item, 2);
 		require(chargeAmount <= item.leftoverCharge, "Cannot charge more than leftover");
@@ -315,7 +316,7 @@ contract RentalWorkflow  is WorkflowBase, Ownable, OwnerPausable{
 	In the end a payment is made.
 	A payment in the amount of `Collateral` is made from workflow to the workflow owner.
 */
-	function chargeWithCollateral(uint256 id) external onlyOwner whenNotPaused  returns (uint256) {
+	function chargeWithCollateral(uint256 id) external onlyOwner whenNotPaused nonReentrant returns (uint256) {
 		Rental memory item = getItem(id);
 		_assertStatus(item, 2);
 		require(item.collateral >= item.leftoverCharge, "Has collateral");
@@ -352,7 +353,7 @@ contract RentalWorkflow  is WorkflowBase, Ownable, OwnerPausable{
 	
 	A payment in the amount of `Collateral` is made from workflow to the address specified in the `Renter` property.
 */
-	function releaseCollateral(uint256 id,uint chargeAmount,string calldata /* evidence */) external whenNotPaused  returns (uint256) {
+	function releaseCollateral(uint256 id,uint chargeAmount,string calldata /*evidence*/) external whenNotPaused nonReentrant returns (uint256) {
 		Rental memory item = getItem(id);
 		_assertStatus(item, 4);
 		require(item.collateral >= chargeAmount, "Has collateral?");
@@ -395,7 +396,7 @@ contract RentalWorkflow  is WorkflowBase, Ownable, OwnerPausable{
 	* `Days charged` = `0`
 	* `Number of days` = `0`
 */
-	function makeAvailable(uint256 id,string calldata name,uint collateral,uint pricePerDay) external onlyOwner whenNotPaused  returns (uint256) {
+	function makeAvailable(uint256 id,string calldata name,uint collateral,uint pricePerDay) external onlyOwner whenNotPaused nonReentrant returns (uint256) {
 		Rental memory item = getItem(id);
 		_assertStatus(item, 5);
 		item.name = name;
@@ -433,7 +434,7 @@ contract RentalWorkflow  is WorkflowBase, Ownable, OwnerPausable{
 	* `Collateral` (Money)
 	* `Price per day` (Money)
 */
-	function update(uint256 id,string calldata name,uint collateral,uint pricePerDay) external onlyOwner whenNotPaused  returns (uint256) {
+	function update(uint256 id,string calldata name,uint collateral,uint pricePerDay) external onlyOwner whenNotPaused nonReentrant returns (uint256) {
 		Rental memory item = getItem(id);
 		_assertStatus(item, 3);
 		item.name = name;
@@ -468,7 +469,7 @@ contract RentalWorkflow  is WorkflowBase, Ownable, OwnerPausable{
 	
 	A payment in the amount of `Leftover charge` is made from the address specified in the `Renter` property to the workflow owner.
 */
-	function endAndSettle(uint256 id) external onlyOwner whenNotPaused  returns (uint256) {
+	function endAndSettle(uint256 id) external onlyOwner whenNotPaused nonReentrant returns (uint256) {
 		Rental memory item = getItem(id);
 		_assertStatus(item, 1);
 		uint nominalFee = ( item.numberOfDays - item.daysCharged ) * item.pricePerDay;
