@@ -35,19 +35,41 @@
                                 "type": "string"
                             },
                             {
-                                "internalType": "bytes",
-                                "name": "code",
-                                "type": "bytes"
-                            }
-                        ],
-                        "name": "registerService",
-                        "outputs": [
-                            {
                                 "internalType": "address",
-                                "name": "",
+                                "name": "destination",
                                 "type": "address"
                             }
                         ],
+                        "name": "registerService",
+                        "outputs": [],
+                        "stateMutability": "nonpayable",
+                        "type": "function"
+                    },
+                    {
+                        "inputs": [
+                            {
+                                "internalType": "string",
+                                "name": "name",
+                                "type": "string"
+                            },
+                            {
+                                "internalType": "string",
+                                "name": "spec",
+                                "type": "string"
+                            },
+                            {
+                                "internalType": "address",
+                                "name": "destination",
+                                "type": "address"
+                            },
+                            {
+                                "internalType": "address",
+                                "name": "owner",
+                                "type": "address"
+                            }
+                        ],
+                        "name": "registerService",
+                        "outputs": [],
                         "stateMutability": "nonpayable",
                         "type": "function"
                     }
@@ -78,10 +100,11 @@
                     "gasEstimates": null,
                     "methodIdentifiers": {
                         "getService(bytes32)": "da47d856",
-                        "registerService(string,string,bytes)": "c292dbe7"
+                        "registerService(string,string,address)": "712be7c1",
+                        "registerService(string,string,address,address)": "8386cdd9"
                     }
                 },
-                "metadata": "{\"compiler\":{\"version\":\"0.8.19+commit.7dd6d404\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"name\",\"type\":\"bytes32\"}],\"name\":\"getService\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"string\",\"name\":\"name\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"spec\",\"type\":\"string\"},{\"internalType\":\"bytes\",\"name\":\"code\",\"type\":\"bytes\"}],\"name\":\"registerService\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"c:/Projects/Toolblox.Audit/Toolblox.Token/Contracts/IServiceLocator.sol\":\"IServiceLocator\"},\"evmVersion\":\"paris\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[]},\"sources\":{\"c:/Projects/Toolblox.Audit/Toolblox.Token/Contracts/IServiceLocator.sol\":{\"keccak256\":\"0xb1db4c74664fb5475f213764575a4eba15c4a72e9b0c938d1bc781d9964782e1\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://079fc5b94d07e2b984d16d372b6a5cb1c745efeca304836322386e27df528edf\",\"dweb:/ipfs/QmRaotAAAZhsTemE954PfhP9r2MZ7ydcZAHdGDYvecYJnz\"]}},\"version\":1}",
+                "metadata": "{\"compiler\":{\"version\":\"0.8.19+commit.7dd6d404\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"name\",\"type\":\"bytes32\"}],\"name\":\"getService\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"string\",\"name\":\"name\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"spec\",\"type\":\"string\"},{\"internalType\":\"address\",\"name\":\"destination\",\"type\":\"address\"}],\"name\":\"registerService\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"string\",\"name\":\"name\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"spec\",\"type\":\"string\"},{\"internalType\":\"address\",\"name\":\"destination\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"}],\"name\":\"registerService\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"c:/Projects/Toolblox.Audit/Toolblox.Token/Contracts/IServiceLocator.sol\":\"IServiceLocator\"},\"evmVersion\":\"paris\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[]},\"sources\":{\"c:/Projects/Toolblox.Audit/Toolblox.Token/Contracts/IServiceLocator.sol\":{\"keccak256\":\"0x7dc8831ddcbb45a49cfbf01505cbe12fb338d934e93d595e42db08e070a4f619\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://3096b9e7751ac22d9b70d406afae9cc11ba7f35c7a5bca537ccb4a25e247c565\",\"dweb:/ipfs/QmRC6ByKdzvmBdJMhcCt62TgQQNgQbpv1Go7uLmPre7y52\"]}},\"version\":1}",
                 "storageLayout": {
                     "storage": [],
                     "types": null
@@ -100,10 +123,10 @@
                 "absolutePath": "c:/Projects/Toolblox.Audit/Toolblox.Token/Contracts/IServiceLocator.sol",
                 "exportedSymbols": {
                     "IServiceLocator": [
-                        20
+                        29
                     ]
                 },
-                "id": 21,
+                "id": 30,
                 "license": "MIT",
                 "nodeType": "SourceUnit",
                 "nodes": [
@@ -125,9 +148,9 @@
                         "contractDependencies": [],
                         "contractKind": "interface",
                         "fullyImplemented": false,
-                        "id": 20,
+                        "id": 29,
                         "linearizedBaseContracts": [
-                            20
+                            29
                         ],
                         "name": "IServiceLocator",
                         "nameLocation": "71:15:0",
@@ -211,15 +234,15 @@
                                     ],
                                     "src": "150:9:0"
                                 },
-                                "scope": 20,
+                                "scope": 29,
                                 "src": "94:66:0",
                                 "stateMutability": "view",
                                 "virtual": false,
                                 "visibility": "external"
                             },
                             {
-                                "functionSelector": "c292dbe7",
-                                "id": 19,
+                                "functionSelector": "712be7c1",
+                                "id": 17,
                                 "implemented": false,
                                 "kind": "function",
                                 "modifiers": [],
@@ -237,7 +260,7 @@
                                             "name": "name",
                                             "nameLocation": "207:4:0",
                                             "nodeType": "VariableDeclaration",
-                                            "scope": 19,
+                                            "scope": 17,
                                             "src": "191:20:0",
                                             "stateVariable": false,
                                             "storageLocation": "calldata",
@@ -264,7 +287,7 @@
                                             "name": "spec",
                                             "nameLocation": "229:4:0",
                                             "nodeType": "VariableDeclaration",
-                                            "scope": 19,
+                                            "scope": 17,
                                             "src": "213:20:0",
                                             "stateVariable": false,
                                             "storageLocation": "calldata",
@@ -288,45 +311,11 @@
                                             "constant": false,
                                             "id": 14,
                                             "mutability": "mutable",
-                                            "name": "code",
-                                            "nameLocation": "250:4:0",
+                                            "name": "destination",
+                                            "nameLocation": "243:11:0",
                                             "nodeType": "VariableDeclaration",
-                                            "scope": 19,
+                                            "scope": 17,
                                             "src": "235:19:0",
-                                            "stateVariable": false,
-                                            "storageLocation": "calldata",
-                                            "typeDescriptions": {
-                                                "typeIdentifier": "t_bytes_calldata_ptr",
-                                                "typeString": "bytes"
-                                            },
-                                            "typeName": {
-                                                "id": 13,
-                                                "name": "bytes",
-                                                "nodeType": "ElementaryTypeName",
-                                                "src": "235:5:0",
-                                                "typeDescriptions": {
-                                                    "typeIdentifier": "t_bytes_storage_ptr",
-                                                    "typeString": "bytes"
-                                                }
-                                            },
-                                            "visibility": "internal"
-                                        }
-                                    ],
-                                    "src": "190:65:0"
-                                },
-                                "returnParameters": {
-                                    "id": 18,
-                                    "nodeType": "ParameterList",
-                                    "parameters": [
-                                        {
-                                            "constant": false,
-                                            "id": 17,
-                                            "mutability": "mutable",
-                                            "name": "",
-                                            "nameLocation": "-1:-1:-1",
-                                            "nodeType": "VariableDeclaration",
-                                            "scope": 19,
-                                            "src": "274:7:0",
                                             "stateVariable": false,
                                             "storageLocation": "default",
                                             "typeDescriptions": {
@@ -334,10 +323,10 @@
                                                 "typeString": "address"
                                             },
                                             "typeName": {
-                                                "id": 16,
+                                                "id": 13,
                                                 "name": "address",
                                                 "nodeType": "ElementaryTypeName",
-                                                "src": "274:7:0",
+                                                "src": "235:7:0",
                                                 "stateMutability": "nonpayable",
                                                 "typeDescriptions": {
                                                     "typeIdentifier": "t_address",
@@ -347,21 +336,165 @@
                                             "visibility": "internal"
                                         }
                                     ],
-                                    "src": "273:9:0"
+                                    "src": "190:65:0"
                                 },
-                                "scope": 20,
-                                "src": "166:117:0",
+                                "returnParameters": {
+                                    "id": 16,
+                                    "nodeType": "ParameterList",
+                                    "parameters": [],
+                                    "src": "264:0:0"
+                                },
+                                "scope": 29,
+                                "src": "166:99:0",
+                                "stateMutability": "nonpayable",
+                                "virtual": false,
+                                "visibility": "external"
+                            },
+                            {
+                                "functionSelector": "8386cdd9",
+                                "id": 28,
+                                "implemented": false,
+                                "kind": "function",
+                                "modifiers": [],
+                                "name": "registerService",
+                                "nameLocation": "280:15:0",
+                                "nodeType": "FunctionDefinition",
+                                "parameters": {
+                                    "id": 26,
+                                    "nodeType": "ParameterList",
+                                    "parameters": [
+                                        {
+                                            "constant": false,
+                                            "id": 19,
+                                            "mutability": "mutable",
+                                            "name": "name",
+                                            "nameLocation": "312:4:0",
+                                            "nodeType": "VariableDeclaration",
+                                            "scope": 28,
+                                            "src": "296:20:0",
+                                            "stateVariable": false,
+                                            "storageLocation": "calldata",
+                                            "typeDescriptions": {
+                                                "typeIdentifier": "t_string_calldata_ptr",
+                                                "typeString": "string"
+                                            },
+                                            "typeName": {
+                                                "id": 18,
+                                                "name": "string",
+                                                "nodeType": "ElementaryTypeName",
+                                                "src": "296:6:0",
+                                                "typeDescriptions": {
+                                                    "typeIdentifier": "t_string_storage_ptr",
+                                                    "typeString": "string"
+                                                }
+                                            },
+                                            "visibility": "internal"
+                                        },
+                                        {
+                                            "constant": false,
+                                            "id": 21,
+                                            "mutability": "mutable",
+                                            "name": "spec",
+                                            "nameLocation": "334:4:0",
+                                            "nodeType": "VariableDeclaration",
+                                            "scope": 28,
+                                            "src": "318:20:0",
+                                            "stateVariable": false,
+                                            "storageLocation": "calldata",
+                                            "typeDescriptions": {
+                                                "typeIdentifier": "t_string_calldata_ptr",
+                                                "typeString": "string"
+                                            },
+                                            "typeName": {
+                                                "id": 20,
+                                                "name": "string",
+                                                "nodeType": "ElementaryTypeName",
+                                                "src": "318:6:0",
+                                                "typeDescriptions": {
+                                                    "typeIdentifier": "t_string_storage_ptr",
+                                                    "typeString": "string"
+                                                }
+                                            },
+                                            "visibility": "internal"
+                                        },
+                                        {
+                                            "constant": false,
+                                            "id": 23,
+                                            "mutability": "mutable",
+                                            "name": "destination",
+                                            "nameLocation": "348:11:0",
+                                            "nodeType": "VariableDeclaration",
+                                            "scope": 28,
+                                            "src": "340:19:0",
+                                            "stateVariable": false,
+                                            "storageLocation": "default",
+                                            "typeDescriptions": {
+                                                "typeIdentifier": "t_address",
+                                                "typeString": "address"
+                                            },
+                                            "typeName": {
+                                                "id": 22,
+                                                "name": "address",
+                                                "nodeType": "ElementaryTypeName",
+                                                "src": "340:7:0",
+                                                "stateMutability": "nonpayable",
+                                                "typeDescriptions": {
+                                                    "typeIdentifier": "t_address",
+                                                    "typeString": "address"
+                                                }
+                                            },
+                                            "visibility": "internal"
+                                        },
+                                        {
+                                            "constant": false,
+                                            "id": 25,
+                                            "mutability": "mutable",
+                                            "name": "owner",
+                                            "nameLocation": "369:5:0",
+                                            "nodeType": "VariableDeclaration",
+                                            "scope": 28,
+                                            "src": "361:13:0",
+                                            "stateVariable": false,
+                                            "storageLocation": "default",
+                                            "typeDescriptions": {
+                                                "typeIdentifier": "t_address",
+                                                "typeString": "address"
+                                            },
+                                            "typeName": {
+                                                "id": 24,
+                                                "name": "address",
+                                                "nodeType": "ElementaryTypeName",
+                                                "src": "361:7:0",
+                                                "stateMutability": "nonpayable",
+                                                "typeDescriptions": {
+                                                    "typeIdentifier": "t_address",
+                                                    "typeString": "address"
+                                                }
+                                            },
+                                            "visibility": "internal"
+                                        }
+                                    ],
+                                    "src": "295:80:0"
+                                },
+                                "returnParameters": {
+                                    "id": 27,
+                                    "nodeType": "ParameterList",
+                                    "parameters": [],
+                                    "src": "384:0:0"
+                                },
+                                "scope": 29,
+                                "src": "271:114:0",
                                 "stateMutability": "nonpayable",
                                 "virtual": false,
                                 "visibility": "external"
                             }
                         ],
-                        "scope": 21,
-                        "src": "61:225:0",
+                        "scope": 30,
+                        "src": "61:327:0",
                         "usedErrors": []
                     }
                 ],
-                "src": "33:253:0"
+                "src": "33:355:0"
             },
             "id": 0
         }
