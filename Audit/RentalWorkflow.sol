@@ -1,4 +1,9 @@
-// SPDX-License-Identifier: GPL-3.0
+// SPDX-License-Identifier: UNLICENSED
+
+// This smart contract code is proprietary.
+// Unauthorized copying, modification, or distribution is strictly prohibited.
+// For licensing inquiries or permissions, contact info@toolblox.net.
+
 pragma solidity ^0.8.0;
 import "../Contracts/WorkflowBase.sol";
 import "../Contracts/OwnerPausable.sol";
