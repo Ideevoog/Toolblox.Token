@@ -26,6 +26,7 @@ contract ServiceDeployer is Ownable, OwnerPausable, ReentrancyGuard {
 		//deploy and check if address is the same as precomputed
 		address destination = _deploy(code, keccak256(abi.encodePacked(counter, sender)));
 		require(predictedAddress == destination, "Deployed address mismatch");
+		emit ServiceDeployed(keccak256(abi.encodePacked(name)), destination);
 
 		//call setOwner() init method on the service to transfer ownership to sender
 		(bool success, ) = destination.call(abi.encodeWithSignature("setOwner(address)", sender));
@@ -48,4 +49,6 @@ contract ServiceDeployer is Ownable, OwnerPausable, ReentrancyGuard {
 			}
         }
     }
+
+	event ServiceDeployed(bytes32 _name, address _destination);
 }
