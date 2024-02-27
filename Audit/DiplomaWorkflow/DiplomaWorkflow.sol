@@ -4,7 +4,7 @@
 // Unauthorized copying, modification, or distribution is strictly prohibited.
 // For licensing inquiries or permissions, contact info@toolblox.net.
 
-pragma solidity ^0.8.19;
+pragma solidity ^0.8.20;
 import "../../Contracts/WorkflowBase.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
@@ -29,7 +29,7 @@ contract DiplomaWorkflow  is WorkflowBase, Ownable, ERC721, ERC721Enumerable, No
 		}
 		item.holder = _msgSender();
 	}
-	constructor() NonTransferrableERC721("Diploma - Diplomas as NFTs", "CERT") {
+	constructor() NonTransferrableERC721("Diploma - Diplomas as NFTs", "CERT") Ownable(_msgSender()) {
 		_transferOwnership(_msgSender());
 	}
 	function setOwner(address _newOwner) public {
@@ -60,7 +60,7 @@ contract DiplomaWorkflow  is WorkflowBase, Ownable, ERC721, ERC721Enumerable, No
 		return result;
 	}
 	function getItemOwner(Diploma memory item) private view returns (address itemOwner) {
-				if (item.status == 0) {
+		if (item.status == 0) {
 			itemOwner = item.holder;
 		}
         else {
@@ -71,22 +71,23 @@ contract DiplomaWorkflow  is WorkflowBase, Ownable, ERC721, ERC721Enumerable, No
             itemOwner = address(this);
         }
 	}
-	function _afterTokenTransfer(address from, address to, uint256 firstTokenId, uint256 batchSize) internal virtual override {
-		super._afterTokenTransfer(from, to, firstTokenId, batchSize);
+    function _increaseBalance(address account, uint128 value) internal virtual override(ERC721,ERC721Enumerable) {
+        super._increaseBalance(account, value);
+    }
+	function _update(address to, uint256 tokenId, address auth) internal virtual override(ERC721,ERC721Enumerable,NonTransferrableERC721) returns(address) {
+		address from = _ownerOf(tokenId);
 		if (from == to)
 		{
-			return;
+			return from;
 		}
-		Diploma memory item = getItem(firstTokenId);
+		Diploma memory item = getItem(tokenId);
 		if (item.status == 0) {
 			item.holder = to;
 		}
+		return super._update(to, tokenId, auth);
 	}
 	function supportsInterface(bytes4 interfaceId) public view override(ERC721,ERC721Enumerable) returns (bool) {
 		return super.supportsInterface(interfaceId);
-	}
-	function _beforeTokenTransfer(address from, address to, uint256 firstTokenId, uint256 batchSize) internal virtual override (ERC721,ERC721Enumerable,NonTransferrableERC721) {
-		super._beforeTokenTransfer(from, to, firstTokenId, batchSize);
 	}
 	function _baseURI() internal view virtual override returns (string memory) {
 		return "https://nft.toolblox.net/api/metadata?workflowId=diplomas_as_nfts&id=";

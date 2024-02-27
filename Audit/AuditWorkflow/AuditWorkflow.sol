@@ -4,12 +4,12 @@
 // Unauthorized copying, modification, or distribution is strictly prohibited.
 // For licensing inquiries or permissions, contact info@toolblox.net.
 
-pragma solidity ^0.8.19;
+pragma solidity ^0.8.20;
 import "../../Contracts/WorkflowBase.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/access/AccessControl.sol";
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
-import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 contract AuditWorkflow  is WorkflowBase, Ownable, AccessControl, ERC721, ReentrancyGuard{
 	struct Audit {
 		uint id;
@@ -66,7 +66,7 @@ contract AuditWorkflow  is WorkflowBase, Ownable, AccessControl, ERC721, Reentra
 		grantRole(SERVICE_ACCOUNT_ROLE, adr);
 		return adr;
 	}
-	constructor() ERC721("Audit - Smart Contract Auditing 8c58d275", "AUDIT") {
+	constructor() ERC721("Audit - Smart Contract Auditing 8c58d275", "AUDIT") Ownable(_msgSender()) {
 		_transferOwnership(_msgSender());
 		_grantRole(DEFAULT_ADMIN_ROLE, _msgSender());
 	}
@@ -126,31 +126,11 @@ contract AuditWorkflow  is WorkflowBase, Ownable, AccessControl, ERC721, Reentra
             itemOwner = address(this);
         }
 	}
-	function _afterTokenTransfer(address from, address to, uint256 firstTokenId, uint256 batchSize) internal virtual override {
-		super._afterTokenTransfer(from, to, firstTokenId, batchSize);
-		if (from == to)
-		{
-			return;
-		}
-		Audit memory item = getItem(firstTokenId);
-		if (item.status == 0) {
-			item.serviceAccount = to;
-		}
-		if (item.status == 1) {
-			item.auditor = to;
-		}
-		if (item.status == 2) {
-			item.auditor = to;
-		}
-		if (item.status == 3) {
-			item.client = to;
-		}
-	}
 	function supportsInterface(bytes4 interfaceId) public view override(AccessControl,ERC721) returns (bool) {
 		return super.supportsInterface(interfaceId);
 	}
-	function _beforeTokenTransfer(address from, address to, uint256 firstTokenId, uint256 batchSize) internal virtual override (ERC721) {
-		super._beforeTokenTransfer(from, to, firstTokenId, batchSize);
+	function _update(address to, uint256 tokenId, address auth) internal virtual override returns(address) {
+		return super._update(to, tokenId, auth);
 	}
 	function _baseURI() internal view virtual override returns (string memory) {
 		return "https://nft.toolblox.net/api/metadata?workflowId=smart_contract_auditing_8c58d275&id=";

@@ -8,7 +8,7 @@ pragma solidity ^0.8.0;
 import "../Contracts/WorkflowBase.sol";
 import "../Contracts/OwnerPausable.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 /*
 	### Rental Smart Contract:
 	
