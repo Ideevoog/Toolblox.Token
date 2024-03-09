@@ -3,7 +3,7 @@ pragma solidity ^0.8.20;
 import "@openzeppelin/contracts/utils/Context.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
 contract WorkflowBase is Context {
-	uint256 internal count = 0;
+	uint256 public count = 0;
 	IExternalServiceLocator internal serviceLocator;
 	event ItemUpdated(uint256 indexed _id, uint64 indexed _status);
 	function _getNextId() internal returns (uint256) {
@@ -25,7 +25,7 @@ contract WorkflowBase is Context {
 			latestIds[setterCount] = i + 1;
 			setterCount++;
 		}
-		return latestIds;
+		return latestIds; 
 	}
 	function getPageIds(uint256 cursor, uint256 howMany) public view returns(uint256[] memory) {
 		uint256[] memory idsToReturn = new uint256[](howMany);
