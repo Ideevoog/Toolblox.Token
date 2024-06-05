@@ -1,8 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 import "@openzeppelin/contracts/utils/Context.sol";
+import "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
-contract WorkflowBase is Context {
+contract WorkflowBaseCommon {
 	uint256 public count = 0;
 	IExternalServiceLocator internal serviceLocator;
 	event ItemUpdated(uint256 indexed _id, uint64 indexed _status);
@@ -69,6 +71,15 @@ contract WorkflowBase is Context {
 		(bool success, bytes memory data) = token_.call(abi.encodeWithSelector(0xa9059cbb, to, value));
 		require(success && (data.length == 0 || abi.decode(data, (bool))), 'TransferHelper::safeTransfer: transfer failed');
 	}
+}
+
+contract WorkflowBase is WorkflowBaseCommon, Context {
+}
+
+contract WorkflowBaseUpgradeable is Initializable, WorkflowBaseCommon, ContextUpgradeable {
+    function initialize() public initializer {
+        __Context_init();
+    }
 }
 
 interface IExternalServiceLocator {
