@@ -1,15 +1,17 @@
 // SPDX-License-Identifier: MIT
+
 pragma solidity ^0.8.0;
+
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "./OwnerPausable.sol";
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "./IServiceLocator.sol";
 
-contract ServiceDeployer is Ownable, OwnerPausable, ReentrancyGuard {	
+contract ServiceDeployer is OwnerPausable, ReentrancyGuard {	
 	IServiceLocator serviceLocator;	
 	uint public counter;
 
-	constructor(IServiceLocator _serviceLocator) {
+	constructor(IServiceLocator _serviceLocator) OwnerPausable(msg.sender) {
 		serviceLocator = _serviceLocator;
 	}
 
