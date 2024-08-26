@@ -1,12 +1,14 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
-import "@openzeppelin/contracts/token/ERC20/presets/ERC20PresetMinterPauser.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Burnable.sol";
+import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Pausable.sol";
+import "@openzeppelin/contracts/access/extensions/AccessControlEnumerable.sol";
+import "@openzeppelin/contracts/access/Ownable2Step.sol";
 import "./IServiceLocator.sol";
 /**
 	TixToken acts as a service locator and provides utility to register services.
  **/
-contract TixToken is ERC20PresetMinterPauser, Ownable, IServiceLocator {	
+contract TixToken is Context, AccessControlEnumerable, ERC20Burnable, ERC20Pausable, Ownable2Step, IServiceLocator {	
 	struct ServiceRegistration {
 		address destination;
 		address owner;
@@ -14,14 +16,19 @@ contract TixToken is ERC20PresetMinterPauser, Ownable, IServiceLocator {
 	}
 	bytes32 public constant SERVICE_WORKER = keccak256("SERVICE_WORKER");
 	bytes32 public constant BALANCER = keccak256("BALANCER");
+    bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
+    bytes32 public constant PAUSER_ROLE = keccak256("PAUSER_ROLE");
 	mapping(bytes32 => ServiceRegistration) public repository;
 	uint public _registrationFee;
 	uint public _counter;
+    bool public _direction;
 
-	constructor(uint256 initialSupply) ERC20PresetMinterPauser("Toolblox Token", "TIX") {
+	constructor(uint256 initialSupply) ERC20("Toolblox Token", "TIX") Ownable(_msgSender()) {
 		address sender = _msgSender();
-		_setupRole(SERVICE_WORKER, sender);
-		_setupRole(BALANCER, sender);
+		_grantRole(SERVICE_WORKER, sender);
+		_grantRole(BALANCER, sender);
+		_grantRole(MINTER_ROLE, sender);
+		_grantRole(PAUSER_ROLE, sender);
 		_mint(sender, initialSupply);
 	}
 
@@ -90,6 +97,25 @@ contract TixToken is ERC20PresetMinterPauser, Ownable, IServiceLocator {
 	{
 		repository[name] = ServiceRegistration(destination, owner, spec);
 		emit ServiceRegistered(name, destination, spec);
+	}
+
+    function mint(address to, uint256 amount) public virtual {
+        require(hasRole(MINTER_ROLE, _msgSender()), "TixToken: must have minter role to mint");
+        _mint(to, amount);
+    }
+
+    function pause() public virtual {
+        require(hasRole(PAUSER_ROLE, _msgSender()), "TixToken: must have pauser role to pause");
+        _pause();
+    }
+
+    function unpause() public virtual {
+        require(hasRole(PAUSER_ROLE, _msgSender()), "TixToken: must have pauser role to unpause");
+        _unpause();
+    }
+
+	function _update(address from, address to, uint256 amount) internal virtual override(ERC20, ERC20Pausable) {
+		super._update(from, to, amount);
 	}
 
 	event ServiceRegistered(bytes32 _name, address _destination, string _spec);
