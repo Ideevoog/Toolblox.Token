@@ -3,9 +3,9 @@
 pragma solidity ^0.8.20;
 
 /**
- * @dev Validation operations.
+ * @dev Validate operations.
  */
-library Validation {
+library Validate {
     function notEmpty(string memory x) internal pure returns (bool) {
         bytes memory b = bytes(x);
         return b.length > 0;
