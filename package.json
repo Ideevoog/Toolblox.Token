@@ -1,5 +1,5 @@
 {
-  "name": "@toolblox/contracts",
+  "name": "@tool_blox/contracts",
   "version": "1.2.0",
   "description": "Toolblox Base Contracts",
   "main": "index.js",
