@@ -3,6 +3,9 @@
   "version": "1.2.0",
   "description": "Toolblox Base Contracts",
   "main": "index.js",
+  "files": [
+    "contracts"
+  ],
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
