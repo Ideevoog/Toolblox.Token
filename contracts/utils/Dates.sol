@@ -11,7 +11,7 @@ library Dates {
     * @param timestamp The original timestamp.
     * @return The normalized timestamp at midnight.
     */
-    function getDate(uint256 timestamp) public pure returns (uint256) {
+    function getDate(uint256 timestamp) internal pure returns (uint256) {
         return (timestamp / 1 days) * 1 days; 
     }
     /**
@@ -19,7 +19,7 @@ library Dates {
      * @param numberOfDays The number of days.
      * @return The equivalent number of seconds.
      */
-    function daysToSeconds(uint256 numberOfDays) public pure returns (uint256) {
+    function daysToSeconds(uint256 numberOfDays) internal pure returns (uint256) {
         return numberOfDays * 1 days;
     }
 }
