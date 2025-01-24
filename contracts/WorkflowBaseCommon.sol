@@ -60,13 +60,19 @@ contract WorkflowBaseCommon {
 	function toString(uint256 value) internal pure returns (string memory) {
 		return Strings.toString(value);
 	}	
-	function safeTransferFromExternal(address token_, address from, address to, uint value) internal {
+	function trySafeTransferFromExternal(address token_, address from, address to, uint value) internal returns (bool) {
 		(bool success, bytes memory data) = token_.call(abi.encodeWithSelector(0x23b872dd, from, to, value));
-		require(success && (data.length == 0 || abi.decode(data, (bool))), 'TransferHelper::transferFrom: transferFrom failed');
+		return success && (data.length == 0 || abi.decode(data, (bool)));
+	}
+	function trySafeTransferExternal(address token_, address to, uint256 value) internal returns (bool) {
+		(bool success, bytes memory data) = token_.call(abi.encodeWithSelector(0xa9059cbb, to, value));
+		return success && (data.length == 0 || abi.decode(data, (bool)));
+	}
+	function safeTransferFromExternal(address token_, address from, address to, uint value) internal {
+		require(trySafeTransferFromExternal(token_, from, to, value), 'TransferHelper::transferFrom: transferFrom failed');
 	}
 	function safeTransferExternal(address token_, address to, uint256 value) internal {
-		(bool success, bytes memory data) = token_.call(abi.encodeWithSelector(0xa9059cbb, to, value));
-		require(success && (data.length == 0 || abi.decode(data, (bool))), 'TransferHelper::safeTransfer: transfer failed');
+		require(trySafeTransferExternal(token_, to, value), 'TransferHelper::safeTransfer: transfer failed');
 	}
 }
 interface IExternalServiceLocator {
