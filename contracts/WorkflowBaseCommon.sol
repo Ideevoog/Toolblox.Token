@@ -74,6 +74,10 @@ contract WorkflowBaseCommon {
 	function safeTransferExternal(address token_, address to, uint256 value) internal {
 		require(trySafeTransferExternal(token_, to, value), 'TransferHelper::safeTransfer: transfer failed');
 	}
+	function safeApproveExternal(address token_, address spender, uint256 value) internal {
+		(bool success, bytes memory data) = token_.call(abi.encodeWithSelector(0x095ea7b3, spender, value));
+		require(success && (data.length == 0 || abi.decode(data, (bool))), 'TransferHelper::safeApprove: approve failed');
+	}
 }
 interface IExternalServiceLocator {
 	function getService(bytes32 name) external view returns (address);
