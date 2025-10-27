@@ -81,4 +81,5 @@ contract WorkflowBaseCommon {
 }
 interface IExternalServiceLocator {
 	function getService(bytes32 name) external view returns (address);
+    function registerService(string calldata name, string calldata spec, address destination, address newOwner) external;
 }
