@@ -2,7 +2,6 @@
 pragma solidity ^0.8.20;
 contract WorkflowBaseCommon {
 	uint256 public count = 0;
-	IExternalServiceLocator internal serviceLocator;
 	event ItemUpdated(uint256 indexed _id, uint64 indexed _status);
 	function _getNextId() internal returns (uint256) {
 		count++;
