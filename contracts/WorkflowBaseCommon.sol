@@ -1,6 +1,5 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
-import "@openzeppelin/contracts/utils/Strings.sol";
 contract WorkflowBaseCommon {
 	uint256 public count = 0;
 	IExternalServiceLocator internal serviceLocator;
@@ -57,9 +56,6 @@ contract WorkflowBaseCommon {
 			itemArray.pop();
 		}
 	}
-	function toString(uint256 value) internal pure returns (string memory) {
-		return Strings.toString(value);
-	}	
 	function trySafeTransferFromExternal(address token_, address from, address to, uint value) internal returns (bool) {
 		(bool success, bytes memory data) = token_.call(abi.encodeWithSelector(0x23b872dd, from, to, value));
 		return success && (data.length == 0 || abi.decode(data, (bool)));
