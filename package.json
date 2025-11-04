@@ -1,6 +1,6 @@
 {
   "name": "@tool_blox/contracts",
-  "version": "1.2.21",
+  "version": "1.2.22",
   "description": "Toolblox Base Contracts",
   "main": "index.js",
   "files": [
