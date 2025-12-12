@@ -5,7 +5,7 @@ pragma solidity ^0.8.20;
 import "./ICreatorToken.sol";
 import "./ICreatorFeeTransferValidator.sol";
 
-abstract contract CreatorFeeWorkflow is ICreatorToken {
+abstract contract CreatorFeeWorkflowBase is ICreatorToken {
     address private _transferValidator;
 
     function getTransferValidator()
